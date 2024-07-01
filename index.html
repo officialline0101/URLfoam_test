@@ -13,7 +13,7 @@
             align-items: flex-start;
             height: 100vh;
             margin: 0;
-            padding-top: 20px; /* ページのトップに空白を作る */
+            padding-top: 20px;
         }
         .container {
             background-color: #fff;
@@ -165,11 +165,20 @@
                 message
             };
 
-            // Googleカレンダーのクイック追加リンクを生成
-            const calendarUrl = generateCalendarUrl(formData);
-            window.open(calendarUrl, '_blank');
+            const scriptURL = 'https://script.google.com/macros/s/AKfycby8iXDhJk_MDQe9u3Y-_TmDKLIMy1M0OM_uaYQs62-hv8z40uTIfQ0TK8FUteH7Mu3kzQ/exec'; // WebアプリケーションのURLをここに追加
 
-            document.getElementById('success-message').innerText = '予約が完了しました。';
+            fetch(scriptURL, {
+                method: 'POST',
+                body: JSON.stringify(formData),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('success-message').innerText = data;
+            })
+            .catch(error => console.error('Error!', error.message));
         }
 
         function formatDate(datetime) {
@@ -180,15 +189,7 @@
             const day = ('0' + date.getDate()).slice(-2);
             const hours = ('0' + date.getHours()).slice(-2);
             const minutes = ('0' + date.getMinutes()).slice(-2);
-            return `${year}-${month}-${day}T${hours}:${minutes}:00`;
-        }
-
-        function generateCalendarUrl(formData) {
-            const calendarId = 'b6d552a065b92516d4af5c10e1e2b70070da63d0e84dbb3111518a92fe067f5b@group.calendar.google.com'; // ここにカレンダーIDを追加
-            const baseUrl = `https://calendar.google.com/calendar/u/0/r/eventedit?text=${encodeURIComponent('予約: ' + formData.name)}`;
-            const dates = formData.dates.filter(date => date !== '').map(date => `&dates=${encodeURIComponent(date)}/${encodeURIComponent(date)}`).join('');
-            const details = `&details=${encodeURIComponent(`電話番号: ${formData.phone}\n訪問回数: ${formData.visitCount}\n症状: ${formData.selectedSymptom}\nメッセージ: ${formData.message}`)}`;
-            return `${baseUrl}${dates}${details}&sf=true&output=xml&add=${calendarId}`;
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
         }
     </script>
 </body>
