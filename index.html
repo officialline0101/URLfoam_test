@@ -174,11 +174,18 @@
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
-                document.getElementById('success-message').innerText = data;
+                if (data.result === 'success') {
+                    document.getElementById('success-message').innerText = '予約が完了しました。';
+                } else {
+                    document.getElementById('success-message').innerText = '予約に失敗しました。もう一度お試しください。';
+                }
             })
-            .catch(error => console.error('Error!', error.message));
+            .catch(error => {
+                document.getElementById('success-message').innerText = '予約に失敗しました。もう一度お試しください。';
+                console.error('Error!', error.message);
+            });
         }
 
         function formatDate(datetime) {
@@ -189,7 +196,7 @@
             const day = ('0' + date.getDate()).slice(-2);
             const hours = ('0' + date.getHours()).slice(-2);
             const minutes = ('0' + date.getMinutes()).slice(-2);
-            return `${year}-${month}-${day}T${hours}:${minutes}`;
+            return `${year}-${month}-${day}T${hours}:${minutes}:00.000Z`;
         }
     </script>
 </body>
