@@ -87,6 +87,12 @@
             margin-top: 20px;
             font-size: 18px;
         }
+        .error-message {
+            text-align: center;
+            color: red;
+            margin-top: 20px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -120,11 +126,12 @@
         <label for="date3">第3希望日</label>
         <input type="datetime-local" id="date3" placeholder="タップして日時を入力">
 
-        <label for="message">メッセージ（質問等お気軽にご記入ください）</label>
+        <label for="message">メッセージを入力してください</label>
         <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea>
 
         <button class="submit-button" onclick="submitForm()">予約を行う</button>
         <div id="success-message" class="success-message"></div>
+        <div id="error-message" class="error-message"></div>
     </div>
 
     <script>
@@ -156,7 +163,7 @@
             const message = document.getElementById('message').value;
 
             if (!name || !phone || !date1 || !visitCount || !selectedSymptom) {
-                document.getElementById('success-message').innerText = '必須項目を全て入力してください。';
+                document.getElementById('error-message').innerText = '必須項目を全て入力してください。';
                 return;
             }
 
@@ -169,7 +176,7 @@
                 message
             };
 
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbwcf0UeYYvCAJpQmA9BXSEWXDy7EkhB6aR_W3qX5zF_28RvTdXTRxLhM2qqW-FxqQYTFA/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbwUxwv-PUXSPXOb6Rhs8BEhL-tSvypnjAq_PGfKdIuUrP_5FYCaCzqicYbUeG0cK2B8IA/exec';
 
             fetch(scriptURL, {
                 method: 'POST',
@@ -182,12 +189,15 @@
             .then(data => {
                 if (data.status === 'success') {
                     document.getElementById('success-message').innerText = '予約が完了しました。';
+                    document.getElementById('error-message').innerText = '';
                 } else {
-                    document.getElementById('success-message').innerText = `予約に失敗しました。もう一度お試しください。エラー: ${data.message}`;
+                    document.getElementById('error-message').innerText = `予約に失敗しました。エラー: ${data.message}`;
+                    document.getElementById('success-message').innerText = '';
                 }
             })
             .catch(error => {
-                document.getElementById('success-message').innerText = `予約に失敗しました。もう一度お試しください。エラー: ${error.message}`;
+                document.getElementById('error-message').innerText = `予約に失敗しました。エラー: ${error.message}`;
+                document.getElementById('success-message').innerText = '';
                 console.error('Error!', error.message);
             });
         }
