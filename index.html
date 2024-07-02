@@ -128,7 +128,6 @@
         <div id="success-message" class="success-message"></div>
     </div>
 
-    <script>
 <script>
     let visitCount = '';
     let selectedSymptom = '';
@@ -166,7 +165,7 @@
             message
         };
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwXnsxfdqPccWRrRiuHwaqrnWEm2UlvIo2NQ6v18IUv7AofjkNxxMN_21Dln-gTNU-HvQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzUIzcO5SQNGxz7c6xt5WZfPe8zm8NWtvucryupTr7zWdFYKdtcgV-N7pm5IuGc-yPnoQ/exec';
 
         fetch(scriptURL, {
             method: 'POST',
@@ -200,4 +199,3 @@
         return `${year}-${month}-${day}T${hours}:${minutes}:00.000Z`;
     }
 </script>
-
