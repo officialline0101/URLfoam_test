@@ -189,14 +189,19 @@
             submitButton.disabled = true;
             submitButton.innerText = '予約中...';
 
-            fetch('https://script.google.com/macros/s/AKfycbwgp9kG-1fPOh4GVsmnojDRnP5FCJ_19EpITkRm2PrGTLkKDJuy-jbgNCiC6OFyrOwn0Q/exec', {
+            fetch('https://script.google.com/macros/s/AKfycbzrUOKbsI6F0lvyd8zOqPaNGFUiB6hswbXzoypyenmNM70dVQMh9K7ygOuXUK7w3LkSBg/exec', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(formData),
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.status === 'success') {
                     onSuccess();
@@ -205,13 +210,14 @@
                 }
             })
             .catch(error => {
+                console.error('Fetch error:', error);
                 onFailure({ message: error.message });
             });
         }
 
         function onSuccess() {
             const submitButton = document.querySelector('.submit-button');
-            submitButton.disabled = true; // ボタンを再び押せないようにする
+            submitButton.disabled = true;
             submitButton.innerText = '予約がされました';
             document.getElementById('success-message').innerText = '予約が完了しました。';
             document.getElementById('error-message').innerText = '';
