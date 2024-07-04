@@ -189,13 +189,12 @@
             submitButton.disabled = true;
             submitButton.innerText = '予約中...';
 
-            fetch('https://script.google.com/macros/s/AKfycbwYfG0C7anvCEV930rQ2L8BhGJ-bW9-Psvp_ITb7ls09StxpoXKxpHD-w848-XBSwPh8w/exec', {
+            fetch('https://script.google.com/macros/s/AKfycbwgp9kG-1fPOh4GVsmnojDRnP5FCJ_19EpITkRm2PrGTLkKDJuy-jbgNCiC6OFyrOwn0Q/exec', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(formData),
-                mode: 'no-cors'
             })
             .then(response => response.json())
             .then(data => {
