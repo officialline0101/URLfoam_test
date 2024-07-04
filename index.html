@@ -189,17 +189,17 @@
             submitButton.disabled = true;
             submitButton.innerText = '予約中...';
 
-            fetch('https://script.google.com/macros/s/AKfycbxyyE7GplOczzSaByRByLhd8cSTYTDMrcoAa4qfm1Ak0FNg3b2V6r-uA5uOHGLsMMWI/exec', {
+            fetch('https://script.google.com/macros/s/AKfycbwQK1AiqvrWk8k16E_wM04u-VXBzrnBLfpRiq7lokrQdFri-CHgTgNVGOISqtBs__BwbA/exec', {
                 method: 'POST',
-                body: JSON.stringify(formData),
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify(formData)
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    onSuccess(data);
+                    onSuccess();
                 } else {
                     onFailure(data);
                 }
@@ -209,7 +209,7 @@
             });
         }
 
-        function onSuccess(response) {
+        function onSuccess() {
             const submitButton = document.querySelector('.submit-button');
             submitButton.disabled = true; // ボタンを再び押せないようにする
             submitButton.innerText = '予約がされました';
