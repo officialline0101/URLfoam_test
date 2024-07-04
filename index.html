@@ -81,6 +81,10 @@
             font-size: 18px;
             cursor: pointer;
         }
+        .submit-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
         .success-message {
             text-align: center;
             color: green;
@@ -98,6 +102,9 @@
 <body>
     <div class="container">
         <h1>予約フォーム</h1>
+        <label for="lineName">LINEの名前※必須</label>
+        <input type="text" id="lineName" placeholder="LINEの名前を入力してください">
+
         <label for="name">お客様名※必須</label>
         <input type="text" id="name" placeholder="お名前を入力してください">
 
@@ -155,30 +162,34 @@
         }
 
         function submitForm() {
+            const lineName = document.getElementById('lineName').value;
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
-            const date1 = formatDate(document.getElementById('date1').value);
-            const date2 = formatDate(document.getElementById('date2').value);
-            const date3 = formatDate(document.getElementById('date3').value);
+            const date1 = document.getElementById('date1').value;
             const message = document.getElementById('message').value;
 
-            if (!name || !phone || !date1 || !visitCount || !selectedSymptom) {
+            if (!lineName || !name || !phone || !date1 || !visitCount || !selectedSymptom) {
                 document.getElementById('error-message').innerText = '必須項目を全て入力してください。';
                 return;
             }
 
             const formData = {
-                name,
-                phone,
-                visitCount,
-                selectedSymptom,
-                dates: [date1, date2, date3],
-                message
+                summary: `予約: ${name}`,
+                lineName: lineName,
+                name: name,
+                phone: phone,
+                selectedSymptom: selectedSymptom,
+                visitCount: visitCount,
+                startDateTime: date1,
+                endDateTime: date1, // Adjust this as needed for the duration of the event
+                message: message
             };
 
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbwUxwv-PUXSPXOb6Rhs8BEhL-tSvypnjAq_PGfKdIuUrP_5FYCaCzqicYbUeG0cK2B8IA/exec';
+            const submitButton = document.querySelector('.submit-button');
+            submitButton.disabled = true;
+            submitButton.innerText = '予約中...';
 
-            fetch(scriptURL, {
+            fetch('https://script.google.com/macros/s/AKfycbxyyE7GplOczzSaByRByLhd8cSTYTDMrcoAa4qfm1Ak0FNg3b2V6r-uA5uOHGLsMMWI/exec', {
                 method: 'POST',
                 body: JSON.stringify(formData),
                 headers: {
@@ -188,29 +199,30 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    document.getElementById('success-message').innerText = '予約が完了しました。';
-                    document.getElementById('error-message').innerText = '';
+                    onSuccess(data);
                 } else {
-                    document.getElementById('error-message').innerText = `予約に失敗しました。エラー: ${data.message}`;
-                    document.getElementById('success-message').innerText = '';
+                    onFailure(data);
                 }
             })
             .catch(error => {
-                document.getElementById('error-message').innerText = `予約に失敗しました。エラー: ${error.message}`;
-                document.getElementById('success-message').innerText = '';
-                console.error('Error!', error.message);
+                onFailure({ message: error.message });
             });
         }
 
-        function formatDate(datetime) {
-            if (!datetime) return '';
-            const date = new Date(datetime);
-            const year = date.getFullYear();
-            const month = ('0' + (date.getMonth() + 1)).slice(-2);
-            const day = ('0' + date.getDate()).slice(-2);
-            const hours = ('0' + date.getHours()).slice(-2);
-            const minutes = ('0' + date.getMinutes()).slice(-2);
-            return `${year}-${month}-${day}T${hours}:${minutes}:00.000Z`;
+        function onSuccess(response) {
+            const submitButton = document.querySelector('.submit-button');
+            submitButton.disabled = true; // ボタンを再び押せないようにする
+            submitButton.innerText = '予約がされました';
+            document.getElementById('success-message').innerText = '予約が完了しました。';
+            document.getElementById('error-message').innerText = '';
+        }
+
+        function onFailure(response) {
+            const submitButton = document.querySelector('.submit-button');
+            submitButton.disabled = false;
+            submitButton.innerText = '予約を行う';
+            document.getElementById('error-message').innerText = `予約に失敗しました。エラー: ${response.message}`;
+            document.getElementById('success-message').innerText = '';
         }
     </script>
 </body>
